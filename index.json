@@ -1,0 +1,32 @@
+{
+  "students": [
+    {
+      "name": "Вася",
+      "surname": "Петров",
+      "scorePhysics": "80",
+      "scoreMath": "87",
+      "scoreRussian": "70"
+    },
+    {
+      "name": "Петя",
+      "surname": "Иванов",
+      "scorePhysics": "90",
+      "scoreMath": "78",
+      "scoreRussian": "65"
+    },
+    {
+      "name": "Лиза",
+      "surname": "Сидорова",
+      "scorePhysics": "72",
+      "scoreMath": "56",
+      "scoreRussian": "98"
+    },
+    {
+      "name": "Маша",
+      "surname": "Васильева",
+      "scorePhysics": "60",
+      "scoreMath": "78",
+      "scoreRussian": "86"
+    }
+  ]
+}

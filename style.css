@@ -1,0 +1,11 @@
+#table_students{
+   border-collapse: collapse;
+}
+#table_students>tr>td{
+    border: 1px solid black;
+    min-width: 100px;
+}
+
+#saveChangesButton{
+    margin: 20px;
+}
