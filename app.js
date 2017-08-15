@@ -29,14 +29,14 @@ $(document).ready(function () {
 
 function createTableHead(student) {
 
-    let columnNames = ['Имя', 'Фамилия','Физика балл',' Математика балл','Русский балл'];
+    let columnNames = ['Имя', 'Фамилия', 'Физика балл', ' Математика балл', 'Русский балл'];
     let tr = document.createElement('tr');
     let td;
     let colClasses = Object.keys(student);
 
     table.appendChild(tr);
 
-    for(let i=0; i<columnNames.length;i++){
+    for (let i = 0; i < columnNames.length; i++) {
         td = document.createElement('td');
         td.classList.add('table-header');
         td.classList.add(colClasses[i]);
@@ -48,16 +48,68 @@ function createTableHead(student) {
 
 function onTableHeadClick(event) {
 
-   let target = event;
+    let target = event,
+        dataClass = target.getAttribute('class'),
+        sortClass = dataClass.split(' ')[1];
+    //sortColumn = document.getElementsByClassName(sortClass);
 
-    let dataClass = target.getAttribute('class');
-    console.log(dataClass);
+    // let sortArrValue = [];
+    //
+    // for(let i = 1; i<sortColumn.length; i++){
+    //     let dataValue = sortColumn[i].innerHTML;
+    //     sortArrValue.push(dataValue);
+    // }
+    //
+    // if(isNaN(sortArrValue[0])){
+    //     sortArrValue.sort();
+    //     // console.log("Сортировка нечисел");
+    // } else {
+    //     sortArrValue.sort(compareNumeric);
+    //     // console.log("Сортировка чисел");
+    //     // console.log(+sortArrValue[0]);
+    // }
+    //
+    // changeRows(sortArrValue);
+    //
+    //
+    // //console.log('массив для сортировки: '+sortArrValue);
+    // console.log('сортированный массив: '+ sortArrValue);
+    changeRows(sortClass);
+}
 
-    let sortClass = dataClass.split(' ')[1];
+function changeRows(sortClass) {
+    let students = createStudentsObjectsFromTable().students;
+    let column = [];
+    for (let i = 0; i < students.length; i++) {
+        let dataValue = students[i][sortClass];
+        column.push(dataValue);
+    }
+    console.log(column);
+    let sortedArray = sortData(column);
+    for(let j = 0; j<sortedArray.length; j++){
+        for(let k=0; k<students.length; k++) {
+            if (students[k][sortClass] === sortedArray[j]) {
+                table.appendChild(createRow(students[k]));
+            }
+        }
+    }
 
+}
 
+function sortData(arr) {
+    if (isNaN(arr[0])) {
+        arr.sort();
+        // console.log("Сортировка нечисел");
+    } else {
+        arr.sort(compareNumeric);
+        // console.log("Сортировка чисел");
+        // console.log(+sortArrValue[0]);
+    }
+    return arr;
+}
 
-    console.log(sortClass);
+function compareNumeric(a, b) {
+    return a - b;
 }
 
 function createRow(student) {
@@ -104,7 +156,7 @@ function focusOnCell(event) {
         //     return;
         // }
 
-        if(target.classList.contains('table-header')){
+        if (target.classList.contains('table-header')) {
             onTableHeadClick(target);
         }
 
@@ -145,7 +197,7 @@ function makeTdEditable(td) {
     // );
 }
 
-function onInputBlur(event){
+function onInputBlur(event) {
     let target = event.target;
     let td = target.parentNode;
     let newValue = target.value;
@@ -157,9 +209,9 @@ function onInputBlur(event){
 
     let saveChangesButton = document.querySelector('#saveChangesButton');
 
-        if (!saveChangesButton) {
-            createSaveTableChangesButton();
-        }
+    if (!saveChangesButton) {
+        createSaveTableChangesButton();
+    }
 }
 
 // function deleteCellValue(target) {
@@ -187,6 +239,11 @@ function createSaveTableChangesButton() {
 
 function onSaveTableChangesButtonClick() {
 
+    let newJsonData = JSON.stringify(createStudentsObjectsFromTable());
+    console.log(newJsonData);
+}
+
+function createStudentsObjectsFromTable() {
     let newTable = {};
 
     let rows = document.getElementsByClassName('row');
@@ -207,6 +264,6 @@ function onSaveTableChangesButtonClick() {
         arrayOfStudents[i] = newStudent;
 
     }
-    let newJsonData = JSON.stringify(newTable);
-    console.log(newJsonData);
+
+    return newTable;
 }
