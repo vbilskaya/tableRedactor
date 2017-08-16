@@ -2,8 +2,6 @@ let table = document.getElementById('table_students');
 
 let editingTd;
 
-// let tableHadEdited = false;
-
 let container = document.querySelector('.container');
 
 $(document).ready(function () {
@@ -17,7 +15,7 @@ $(document).ready(function () {
 
         for (let i = 0; i < jsonStudents.length; i++) {
 
-            table.appendChild(createRow(jsonStudents[i]), i);
+            table.appendChild(createRow(jsonStudents[i]));
 
         }
     });
@@ -51,29 +49,7 @@ function onTableHeadClick(event) {
     let target = event,
         dataClass = target.getAttribute('class'),
         sortClass = dataClass.split(' ')[1];
-    //sortColumn = document.getElementsByClassName(sortClass);
 
-    // let sortArrValue = [];
-    //
-    // for(let i = 1; i<sortColumn.length; i++){
-    //     let dataValue = sortColumn[i].innerHTML;
-    //     sortArrValue.push(dataValue);
-    // }
-    //
-    // if(isNaN(sortArrValue[0])){
-    //     sortArrValue.sort();
-    //     // console.log("Сортировка нечисел");
-    // } else {
-    //     sortArrValue.sort(compareNumeric);
-    //     // console.log("Сортировка чисел");
-    //     // console.log(+sortArrValue[0]);
-    // }
-    //
-    // changeRows(sortArrValue);
-    //
-    //
-    // //console.log('массив для сортировки: '+sortArrValue);
-    // console.log('сортированный массив: '+ sortArrValue);
     changeRows(sortClass);
 }
 
@@ -82,11 +58,6 @@ function changeRows(sortClass) {
     let column = [];
     for (let i = 0; i < students.length; i++) {
         let dataValue = students[i][sortClass];
-        let studentId = students[i][studentId];
-        
-        for(let j=0; j<2; j++){
-
-        }
         column.push(dataValue);
     }
     console.log(column);
@@ -122,11 +93,10 @@ function compareNumeric(a, b) {
     return a - b;
 }
 
-function createRow(student, i) {
+function createRow(student) {
 
     let row = document.createElement('tr');
     row.setAttribute('class', 'row');
-    row.setAttribute('id', i);
 
     for (key in student) {
 
@@ -227,8 +197,6 @@ function createStudentsObjectsFromTable() {
         let newStudent = {};
         let cells = rows[i].childNodes;
         let key, cellValue;
-        let studentId = rows[i].getAttribute('id');
-        newStudent[id] = studentId;
 
         for (let j = 0; j < cells.length; j++) {
 
