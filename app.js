@@ -17,7 +17,7 @@ $(document).ready(function () {
 
         for (let i = 0; i < jsonStudents.length; i++) {
 
-            table.appendChild(createRow(jsonStudents[i]));
+            table.appendChild(createRow(jsonStudents[i]), i);
 
         }
     });
@@ -82,9 +82,15 @@ function changeRows(sortClass) {
     let column = [];
     for (let i = 0; i < students.length; i++) {
         let dataValue = students[i][sortClass];
+        let studentId = students[i][studentId];
+        
+        for(let j=0; j<2; j++){
+
+        }
         column.push(dataValue);
     }
     console.log(column);
+    deleteOldTable();
     let sortedArray = sortData(column);
     for(let j = 0; j<sortedArray.length; j++){
         for(let k=0; k<students.length; k++) {
@@ -96,14 +102,18 @@ function changeRows(sortClass) {
 
 }
 
+function deleteOldTable(){
+    let rows = document.getElementsByClassName('row');
+    while(rows.length>0){
+        table.removeChild(rows[0]);
+    }
+}
+
 function sortData(arr) {
     if (isNaN(arr[0])) {
         arr.sort();
-        // console.log("Сортировка нечисел");
     } else {
         arr.sort(compareNumeric);
-        // console.log("Сортировка чисел");
-        // console.log(+sortArrValue[0]);
     }
     return arr;
 }
@@ -112,10 +122,11 @@ function compareNumeric(a, b) {
     return a - b;
 }
 
-function createRow(student) {
+function createRow(student, i) {
 
     let row = document.createElement('tr');
     row.setAttribute('class', 'row');
+    row.setAttribute('id', i);
 
     for (key in student) {
 
@@ -133,28 +144,6 @@ function focusOnCell(event) {
     let target = event.target;
 
     while (target != table) {
-        // if (target.className == 'edit-cancel') {
-        //     finishTdEdit(editingTd.elem, false);
-        //     return;
-        // }
-        //
-        // if (target.className == 'delete') {
-        //     deleteCellValue(target);
-        //     return;
-        // }
-        //
-        // if (target.className == 'edit-ok') {
-        //     finishTdEdit(editingTd.elem, true);
-        //     tableHadEdited = true;
-        //
-        //     let saveChangesButton = document.querySelector('#saveChangesButton');
-        //
-        //     if (!saveChangesButton) {
-        //         createSaveTableChangesButton();
-        //     }
-        //
-        //     return;
-        // }
 
         if (target.classList.contains('table-header')) {
             onTableHeadClick(target);
@@ -214,21 +203,6 @@ function onInputBlur(event) {
     }
 }
 
-// function deleteCellValue(target) {
-//     let textArea = target.parentNode.previousSibling;
-//     textArea.value = '';
-// }
-
-// function finishTdEdit(td, isOk) {
-//     if (isOk) {
-//         td.innerHTML = td.firstChild.value;
-//     } else {
-//         td.innerHTML = editingTd.data;
-//     }
-//     td.classList.remove('edit-td'); // remove edit class
-//     editingTd = null;
-// }
-
 function createSaveTableChangesButton() {
     let saveButton = document.createElement('button');
     saveButton.setAttribute('id', 'saveChangesButton');
@@ -253,6 +227,8 @@ function createStudentsObjectsFromTable() {
         let newStudent = {};
         let cells = rows[i].childNodes;
         let key, cellValue;
+        let studentId = rows[i].getAttribute('id');
+        newStudent[id] = studentId;
 
         for (let j = 0; j < cells.length; j++) {
 
