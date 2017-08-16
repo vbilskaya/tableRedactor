@@ -1,6 +1,7 @@
 {
   "students": [
     {
+      "id": 1,
       "name": "Вася",
       "surname": "Петров",
       "scorePhysics": "80",
@@ -8,6 +9,7 @@
       "scoreRussian": "70"
     },
     {
+      "id": 2,
       "name": "Петя",
       "surname": "Иванов",
       "scorePhysics": "90",
@@ -15,6 +17,7 @@
       "scoreRussian": "65"
     },
     {
+      "id": 3,
       "name": "Лиза",
       "surname": "Сидорова",
       "scorePhysics": "72",
@@ -22,6 +25,7 @@
       "scoreRussian": "98"
     },
     {
+      "id": 4,
       "name": "Маша",
       "surname": "Васильева",
       "scorePhysics": "60",
