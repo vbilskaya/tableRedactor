@@ -27,7 +27,7 @@ $(document).ready(function () {
 
 function createTableHead(student) {
 
-    let columnNames = ['Имя', 'Фамилия', 'Физика балл', ' Математика балл', 'Русский балл'];
+    let columnNames = ['ID студента', 'Имя', 'Фамилия', 'Физика балл', ' Математика балл', 'Русский балл'];
     let tr = document.createElement('tr');
     let td;
     let colClasses = Object.keys(student);
@@ -58,39 +58,50 @@ function changeRows(sortClass) {
     let column = [];
     for (let i = 0; i < students.length; i++) {
         let dataValue = students[i][sortClass];
-        column.push(dataValue);
+        let id = students[i]['id'];
+        let student = [id, dataValue];
+        column.push(student);
     }
-    console.log(column);
+    console.log('Колонка ' + column);
     deleteOldTable();
     let sortedArray = sortData(column);
-    for(let j = 0; j<sortedArray.length; j++){
-        for(let k=0; k<students.length; k++) {
-            if (students[k][sortClass] === sortedArray[j]) {
-                table.appendChild(createRow(students[k]));
+
+    for (let i = 0; i < sortedArray.length; i++) {
+        for (let j = 0; j < students.length; j++) {
+            if (sortedArray[i][0] === students[j]['id']) {
+                table.appendChild(createRow(students[j]));
             }
         }
     }
 
 }
 
-function deleteOldTable(){
+function deleteOldTable() {
     let rows = document.getElementsByClassName('row');
-    while(rows.length>0){
+    while (rows.length > 0) {
         table.removeChild(rows[0]);
     }
 }
 
 function sortData(arr) {
-    if (isNaN(arr[0])) {
-        arr.sort();
+    // let sortElems
+    if (isNaN(arr[0][1])) {
+        arr.sort(compareString);
     } else {
         arr.sort(compareNumeric);
     }
+    console.log('массив после сортировки' + arr);
     return arr;
 }
 
+function compareString(a, b) {
+    if (a[1] > b[1]) return 1;
+    else if (a[1] < b[1]) return -1;
+    else return 0;
+}
+
 function compareNumeric(a, b) {
-    return a - b;
+    return a[1] - b[1];
 }
 
 function createRow(student) {
