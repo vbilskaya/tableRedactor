@@ -62,8 +62,9 @@ function changeRows(sortClass) {
         let student = [id, dataValue];
         column.push(student);
     }
-    console.log('Колонка ' + column);
+
     deleteOldTable();
+
     let sortedArray = sortData(column);
 
     for (let i = 0; i < sortedArray.length; i++) {
@@ -84,13 +85,13 @@ function deleteOldTable() {
 }
 
 function sortData(arr) {
-    // let sortElems
+
     if (isNaN(arr[0][1])) {
         arr.sort(compareString);
     } else {
         arr.sort(compareNumeric);
     }
-    console.log('массив после сортировки' + arr);
+
     return arr;
 }
 
@@ -131,7 +132,7 @@ function focusOnCell(event) {
         }
 
         if (target.parentNode.classList.contains('row')) {
-            if (editingTd) return; // already editing
+            if (editingTd) return;
 
             makeTdEditable(target);
             return;
@@ -143,6 +144,7 @@ function focusOnCell(event) {
 }
 
 function makeTdEditable(td) {
+
     editingTd = {
         elem: td,
         data: td.innerHTML
@@ -162,9 +164,6 @@ function makeTdEditable(td) {
 
     input.addEventListener('blur', onInputBlur);
 
-    // td.insertAdjacentHTML("beforeEnd",
-    //     '<div class="edit-controls"><button class="delete">DEL</button><button class="edit-ok">OK</button><button class="edit-cancel">CANCEL</button></div>'
-    // );
 }
 
 function onInputBlur(event) {
@@ -199,8 +198,8 @@ function onSaveTableChangesButtonClick() {
 }
 
 function createStudentsObjectsFromTable() {
-    let newTable = {};
 
+    let newTable = {};
     let rows = document.getElementsByClassName('row');
     let arrayOfStudents = newTable.students = [];
 
@@ -216,6 +215,7 @@ function createStudentsObjectsFromTable() {
             newStudent[key] = cellValue;
 
         }
+
         arrayOfStudents[i] = newStudent;
 
     }
