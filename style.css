@@ -1,11 +1,36 @@
 #table_students{
    border-collapse: collapse;
-}
-#table_students>tr>td{
-    border: 1px solid black;
-    min-width: 100px;
+    display: table;
 }
 
 #saveChangesButton{
     margin: 20px;
+}
+
+.table-header, .row-number{
+    background-color: #9fb6cd;
+}
+
+.row, .head-row{
+    display: table-row;
+}
+
+.row-number, .table-data, .table-header{
+    display: table-cell;
+    border: 1px solid black;
+}
+
+.row-number, .num{
+    max-width: 40px;
+    min-width: 25px;
+    text-align: center;
+}
+
+.table-data{
+    min-width: 100px;
+}
+
+.table-data:focus{
+    border: 1px solid #00FF00;
+    background-color: #c6e2ff;
 }

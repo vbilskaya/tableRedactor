@@ -1,3 +1,4 @@
+"use strict";
 let table = document.getElementById('table_students');
 
 let editingTd;
@@ -9,13 +10,14 @@ $(document).ready(function () {
     $.getJSON('index.json', function (json) {
 
         let jsonStudents = json.students;
-        let table = document.getElementById('table_students');
 
         createTableHead(jsonStudents[0]);
 
         for (let i = 0; i < jsonStudents.length; i++) {
 
-            table.appendChild(createRow(jsonStudents[i]));
+            let rowNumber = i+1;
+
+            table.appendChild(createRow(jsonStudents[i], rowNumber));
 
         }
     });
@@ -24,18 +26,24 @@ $(document).ready(function () {
 
 });
 
-
 function createTableHead(student) {
 
     let columnNames = ['ID студента', 'Имя', 'Фамилия', 'Физика балл', ' Математика балл', 'Русский балл'];
-    let tr = document.createElement('tr');
+    let tr = document.createElement('div');
+    tr.classList.add('head-row');
     let td;
     let colClasses = Object.keys(student);
 
     table.appendChild(tr);
+    //add first col header
+    let numHeader = document.createElement('div');
+    numHeader.classList.add('table-header');
+    numHeader.classList.add('num');
+    numHeader.innerHTML = "№";
+    tr.appendChild(numHeader);
 
     for (let i = 0; i < columnNames.length; i++) {
-        td = document.createElement('td');
+        td = document.createElement('div');
         td.classList.add('table-header');
         td.classList.add(colClasses[i]);
         td.innerHTML = columnNames[i];
@@ -54,6 +62,7 @@ function onTableHeadClick(event) {
 }
 
 function changeRows(sortClass) {
+
     let students = createStudentsObjectsFromTable().students;
     let column = [];
     for (let i = 0; i < students.length; i++) {
@@ -62,7 +71,8 @@ function changeRows(sortClass) {
         let student = [id, dataValue];
         column.push(student);
     }
-
+//change rows not delete all and render whole table
+    //use insertBefore method
     deleteOldTable();
 
     let sortedArray = sortData(column);
@@ -70,7 +80,7 @@ function changeRows(sortClass) {
     for (let i = 0; i < sortedArray.length; i++) {
         for (let j = 0; j < students.length; j++) {
             if (sortedArray[i][0] === students[j]['id']) {
-                table.appendChild(createRow(students[j]));
+                table.appendChild(createRow(students[j]), students[j]['id']);//think about getting row number
             }
         }
     }
@@ -87,7 +97,7 @@ function deleteOldTable() {
 function sortData(arr) {
 
     if (isNaN(arr[0][1])) {
-        arr.sort(compareString);
+        arr.sort(compareString);//change to localeCompare
     } else {
         arr.sort(compareNumeric);
     }
@@ -105,16 +115,22 @@ function compareNumeric(a, b) {
     return a[1] - b[1];
 }
 
-function createRow(student) {
+function createRow(student, rowNumber) {
 
-    let row = document.createElement('tr');
-    row.setAttribute('class', 'row');
+    let row = document.createElement('div');//change to div
+    row.classList.add('row');
+    let num = document.createElement('div');
+    num.innerHTML = rowNumber;
+    num.classList.add('row-number');
+    row.appendChild(num);
+    let studentKeys = Object.keys(student);
 
-    for (key in student) {
+    for (let i=0; i<studentKeys.length; i++) {
 
-        let td = document.createElement('td');
-        td.setAttribute('class', key);
-        td.innerHTML = student[key];
+        let td = document.createElement('div');//change to div
+        td.classList.add( studentKeys[i]);
+        td.classList.add('table-data');
+        td.innerHTML = student[studentKeys[i]];
         row.appendChild(td);
     }
 
@@ -131,7 +147,7 @@ function focusOnCell(event) {
             onTableHeadClick(target);
         }
 
-        if (target.parentNode.classList.contains('row')) {
+        if (target.classList.contains('table-data')) {
             if (editingTd) return;
 
             makeTdEditable(target);
@@ -144,37 +160,18 @@ function focusOnCell(event) {
 }
 
 function makeTdEditable(td) {
+//use contentEditable attr
 
-    editingTd = {
-        elem: td,
-        data: td.innerHTML
-    };
-
-    td.classList.add('edit-td');
-
-    let input = document.createElement('input');
-    input.style.width = td.clientWidth + 'px';
-    input.style.height = td.clientHeight + 'px';
-    input.className = 'edit-area';
-
-    input.value = td.innerHTML;
-    td.innerHTML = '';
-    td.appendChild(input);
-    input.focus();
-
-    input.addEventListener('blur', onInputBlur);
+    td.setAttribute('contenteditable', 'true');
+    td.addEventListener('blur', onCellBlur);
 
 }
 
-function onInputBlur(event) {
-    let target = event.target;
-    let td = target.parentNode;
-    let newValue = target.value;
+function onCellBlur(event) {
+    //remove contentEditable attr
 
-    td.innerHTML += newValue;
-    td.classList.remove('edit-td'); // remove edit class
-    td.removeChild(td.firstChild);
-    editingTd = null;
+    let td = event.target;
+    td.removeAttribute('contenteditable');
 
     let saveChangesButton = document.querySelector('#saveChangesButton');
 
@@ -208,9 +205,9 @@ function createStudentsObjectsFromTable() {
         let cells = rows[i].childNodes;
         let key, cellValue;
 
-        for (let j = 0; j < cells.length; j++) {
+        for (let j = 1; j < cells.length; j++) {
 
-            key = cells[j].getAttribute('class');
+            key = cells[j].getAttribute('class').split(' ')[0];
             cellValue = cells[j].innerHTML;
             newStudent[key] = cellValue;
 
