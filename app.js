@@ -1,7 +1,8 @@
 "use strict";
 let table = document.getElementById('table_students');
-
+const TABLE_ROWS = document.getElementsByClassName('row');
 let editingTd;
+let studentExample;
 
 let container = document.querySelector('.container');
 
@@ -13,9 +14,11 @@ $(document).ready(function () {
 
         createTableHead(jsonStudents[0]);
 
+        studentExample = jsonStudents[0];
+
         for (let i = 0; i < jsonStudents.length; i++) {
 
-            let rowNumber = i+1;
+            let rowNumber = i + 1;
 
             table.appendChild(createRow(jsonStudents[i], rowNumber));
 
@@ -23,8 +26,103 @@ $(document).ready(function () {
     });
 
     table.addEventListener('click', focusOnCell);
+    addTableEventsListeners();
 
 });
+
+function addTableEventsListeners() {
+    let addButton = document.getElementById('add-row');
+    let removeButton = document.getElementById('remove-row');
+
+    for (let i = 0; i < TABLE_ROWS.length; i++) {
+        TABLE_ROWS[i].addEventListener('focusout', onRowBlur);
+        console.log('event listener blur is added ' + i);
+    }
+
+    addButton.addEventListener('click', onAddButtonClick);
+    removeButton.addEventListener('click', onRemoveButtonClick);
+}
+
+function getRowsCount() {
+    return TABLE_ROWS.length;
+}
+
+function onAddButtonClick() {
+    let activeRow = document.querySelector('.active-row');
+    //let rowStructure = Object.keys(studentExample);
+    if(activeRow === null){
+        table.appendChild( createEmptyRow(getRowsCount()+1));
+    }else {
+        let oldRowsCount = TABLE_ROWS.length;
+        table.insertBefore(createEmptyRow(activeRow.getAttribute('id')),activeRow);
+        let newRowsCount = TABLE_ROWS.length;
+        for(let i=activeRow.getAttribute('id'); i<getRowsCount();i++){
+            setIdAndRowNumber(TABLE_ROWS[i], i+1);
+        }
+    }
+
+}
+
+function setIdAndRowNumber(rowElem, num) {
+    rowElem.id = num;
+    let rowNum = document.createElement('div');
+    rowNum.innerHTML = +num;
+    rowNum.classList.add('row-number');
+    rowElem.appendChild(rowNum);
+    return rowElem;
+}
+
+function createEmptyRow(number) {
+    let row = document.createElement('div');//change to div
+    row.classList.add('row');
+
+    let newRow = setIdAndRowNumber(row, number);
+
+    let studentKeys = Object.keys(studentExample);
+
+    for (let i = 0; i < studentKeys.length; i++) {
+        if(studentKeys[i]==='id'){
+            let td = document.createElement('div');
+            td.classList.add(studentKeys[i]);
+            td.classList.add('table-data');
+            td.innerHTML = number;
+            newRow.appendChild(td);
+        }else {
+
+            let td = document.createElement('div');//change to div
+            td.classList.add(studentKeys[i]);
+            td.classList.add('table-data');
+            newRow.appendChild(td);
+        }
+    }
+
+    return newRow;
+}
+
+function createRow(student, rowNumber) {
+
+    let row = document.createElement('div');//change to div
+    row.classList.add('row');
+
+    setIdAndRowNumber(row, rowNumber);
+
+    let studentKeys = Object.keys(student);
+
+    for (let i = 0; i < studentKeys.length; i++) {
+
+        let td = document.createElement('div');//change to div
+        td.classList.add(studentKeys[i]);
+        td.classList.add('table-data');
+        td.innerHTML = student[studentKeys[i]];
+        row.appendChild(td);
+    }
+
+    return row;
+}
+
+function onRemoveButtonClick(event) {
+
+}
 
 function createTableHead(student) {
 
@@ -115,28 +213,6 @@ function compareNumeric(a, b) {
     return a[1] - b[1];
 }
 
-function createRow(student, rowNumber) {
-
-    let row = document.createElement('div');//change to div
-    row.classList.add('row');
-    let num = document.createElement('div');
-    num.innerHTML = rowNumber;
-    num.classList.add('row-number');
-    row.appendChild(num);
-    let studentKeys = Object.keys(student);
-
-    for (let i=0; i<studentKeys.length; i++) {
-
-        let td = document.createElement('div');//change to div
-        td.classList.add( studentKeys[i]);
-        td.classList.add('table-data');
-        td.innerHTML = student[studentKeys[i]];
-        row.appendChild(td);
-    }
-
-    return row;
-}
-
 function focusOnCell(event) {
 
     let target = event.target;
@@ -153,10 +229,34 @@ function focusOnCell(event) {
             makeTdEditable(target);
             return;
         }
+        if (target.classList.contains('row-number')) {
+
+            selectRow(target);
+            return;
+            // let row = target.parentNode;
+            // row.addEventListener('focusout', onRowBlur);
+        }
 
         target = target.parentNode;
     }
 
+}
+
+function selectRow(target) {
+    let row = target.parentNode;
+    for (let i = 0; i < TABLE_ROWS.length; i++) {
+        if (TABLE_ROWS[i].classList.contains('active-row')) {
+            TABLE_ROWS[i].classList.remove('active-row');
+        }
+    }
+
+    row.classList.add('active-row');
+
+}
+
+function onRowBlur(event) {
+    let row = event.target;
+    row.classList.remove('active-row');
 }
 
 function makeTdEditable(td) {
@@ -164,6 +264,7 @@ function makeTdEditable(td) {
 
     td.setAttribute('contenteditable', 'true');
     td.addEventListener('blur', onCellBlur);
+    selectRow(td.parentNode.firstChild);
 
 }
 
@@ -183,7 +284,7 @@ function onCellBlur(event) {
 function createSaveTableChangesButton() {
     let saveButton = document.createElement('button');
     saveButton.setAttribute('id', 'saveChangesButton');
-    saveButton.innerHTML = "Сохранить изменения";
+    saveButton.innerHTML = "Save";
     container.appendChild(saveButton);
     saveButton.addEventListener('click', onSaveTableChangesButtonClick);
 }
