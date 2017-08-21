@@ -3,7 +3,7 @@ let table = document.getElementById('table_students');
 const TABLE_ROWS = document.getElementsByClassName('row');
 let editingTd;
 let studentExample;
-
+let studentsFromJson;
 let container = document.querySelector('.container');
 
 $(document).ready(function () {
@@ -12,16 +12,19 @@ $(document).ready(function () {
 
         let jsonStudents = json.students;
 
+        //тест, надо будет передать контекст без глобальной переменной
+        studentsFromJson = jsonStudents;
+
         createTableHead(jsonStudents[0]);
 
         studentExample = jsonStudents[0];
 
         for (let i = 0; i < jsonStudents.length; i++) {
 
-            let rowNumber = i + 1;
-
-            table.appendChild(createRow(jsonStudents[i], rowNumber));
-
+            // let rowNumber = i + 1;
+            //
+            // table.appendChild(createRow(jsonStudents[i], rowNumber));
+            table.appendChild(renderRowFromJson(jsonStudents[i]));
         }
     });
 
@@ -47,18 +50,38 @@ function getRowsCount() {
     return TABLE_ROWS.length;
 }
 
+function onRemoveButtonClick() {
+
+    let activeRow = document.querySelector('.active-row');
+    let number;
+    if (activeRow === null) {
+        table.removeChild(table.lastChild);
+        // number = +getRowsCount();
+
+    }else{
+        number = activeRow.getAttribute('id');
+        deleteRow(number);
+        changeNumeration(document.getElementById(+number+1),number);
+    }
+
+}
+
 function onAddButtonClick() {
     let activeRow = document.querySelector('.active-row');
     //let rowStructure = Object.keys(studentExample);
-    if(activeRow === null){
-        table.appendChild( createEmptyRow(getRowsCount()+1));
-    }else {
-        let oldRowsCount = TABLE_ROWS.length;
-        table.insertBefore(createEmptyRow(activeRow.getAttribute('id')),activeRow);
-        let newRowsCount = TABLE_ROWS.length;
-        for(let i=activeRow.getAttribute('id'); i<getRowsCount();i++){
-            setIdAndRowNumber(TABLE_ROWS[i], i+1);
-        }
+    if (activeRow === null) {
+        //table.appendChild(createEmptyRow(getRowsCount() + 1));
+        table.appendChild(createLastEmptyRow());
+    } else {
+        // let oldRowsCount = TABLE_ROWS.length;
+        // table.insertBefore(createEmptyRow(activeRow.getAttribute('id')), activeRow);
+        // let newRowsCount = TABLE_ROWS.length;
+        // for (let i = activeRow.getAttribute('id'); i < getRowsCount(); i++) {
+        //     setIdAndRowNumber(TABLE_ROWS[i], i + 1);
+        // }
+        let num = activeRow.getAttribute('id');
+        table.insertBefore(createEmptyRowBeforeActive(num), activeRow);
+        changeNumeration(activeRow, num-1);
     }
 
 }
@@ -81,13 +104,13 @@ function createEmptyRow(number) {
     let studentKeys = Object.keys(studentExample);
 
     for (let i = 0; i < studentKeys.length; i++) {
-        if(studentKeys[i]==='id'){
+        if (studentKeys[i] === 'id') {
             let td = document.createElement('div');
             td.classList.add(studentKeys[i]);
             td.classList.add('table-data');
             td.innerHTML = number;
             newRow.appendChild(td);
-        }else {
+        } else {
 
             let td = document.createElement('div');//change to div
             td.classList.add(studentKeys[i]);
@@ -97,6 +120,99 @@ function createEmptyRow(number) {
     }
 
     return newRow;
+}
+
+function generateRow(dataExample) {
+    let row = document.createElement('div');
+    row.classList.add('row');
+
+    let rowNum = document.createElement('div');
+    rowNum.classList.add('row-number');
+    row.appendChild(rowNum);
+
+    let studentKeys = Object.keys(dataExample);
+
+    for (let i = 0; i < studentKeys.length; i++) {
+        let td = document.createElement('div');//change to div
+        td.classList.add(studentKeys[i]);
+        td.classList.add('table-data');
+        row.appendChild(td);
+    }
+
+    return row;
+}
+
+function fillRowNumber(row, num) {
+
+    let rowNumber, dataId;
+
+    //set row id
+    row.id = num;
+
+    //set row number
+    rowNumber = row.firstChild;
+    rowNumber.innerHTML = num;
+
+    //set student id, to make it unique
+    dataId = row.firstChild.nextSibling;
+    dataId.innerHTML = num;
+
+}
+
+function fillRowContent(row, data) {
+
+    let cells = row.childNodes;
+    let dataKeys = Object.keys(data);
+
+    for (let i = 2; i < cells.length; i++) {
+
+        for (let j = 1; j < dataKeys.length; j++) {
+
+            if(dataKeys[j] === cells[i].classList[0]){
+                cells[i].innerHTML = data[dataKeys[j]];
+            }
+        }
+    }
+}
+
+function renderRowFromJson(student) {
+   let row = generateRow(studentExample);
+   fillRowNumber(row, student['id']);
+   fillRowContent(row, student);
+
+   return row;
+
+}
+
+function createLastEmptyRow() {
+    let num = +getRowsCount()+1;
+    let row = generateRow(studentExample);
+    fillRowNumber(row, num);
+
+    return row;
+}
+
+function createEmptyRowBeforeActive(num) {
+    let row = generateRow(studentExample);
+    fillRowNumber(row, num);
+
+    return row;
+
+}
+
+function changeNumeration(row, num) {
+    let newNum = +num+1;
+    //fillRowNumber(row, newNum);
+    for(let i=newNum; i<getRowsCount()+1; i++){
+        fillRowNumber(row, newNum);
+        row = row.nextSibling;
+        newNum+=1;
+    }
+}
+
+function deleteRow(number) {
+    let rowToDel = document.getElementById( number );
+    table.removeChild(rowToDel);
 }
 
 function createRow(student, rowNumber) {
@@ -118,10 +234,6 @@ function createRow(student, rowNumber) {
     }
 
     return row;
-}
-
-function onRemoveButtonClick(event) {
-
 }
 
 function createTableHead(student) {
