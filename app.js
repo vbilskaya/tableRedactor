@@ -87,7 +87,7 @@ function setIdAndRowNumber(rowElem, num) {
     rowNum.classList.add('row-number');
     rowElem.appendChild(rowNum);
     return rowElem;
-}
+}//не используется, вызывается из неиспользуемых функций
 
 function createEmptyRow(number) {
     let row = document.createElement('div');//change to div
@@ -114,7 +114,7 @@ function createEmptyRow(number) {
     }
 
     return newRow;
-}
+}//не используется
 
 function generateRow(dataExample) {
     let row = document.createElement('div');
@@ -228,7 +228,7 @@ function createRow(student, rowNumber) {
     }
 
     return row;
-}
+}//не используется так как изменилась логика заполнения таблицы
 
 function createTableHead(student) {
 
@@ -364,7 +364,7 @@ function selectRow(target) {
 function onRowBlur(event) {
     let row = event.target;
     row.classList.remove('active-row');
-}
+}//не используется
 
 function makeTdEditable(td) {
 //use contentEditable attr
