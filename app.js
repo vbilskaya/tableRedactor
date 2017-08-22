@@ -56,32 +56,26 @@ function onRemoveButtonClick() {
     let number;
     if (activeRow === null) {
         table.removeChild(table.lastChild);
-        // number = +getRowsCount();
 
     }else{
         number = activeRow.getAttribute('id');
         deleteRow(number);
-        changeNumeration(document.getElementById(+number+1),number);
+        let num = +number+1;
+        changeNumeration(document.getElementById(num),number-1);
     }
 
 }
 
 function onAddButtonClick() {
     let activeRow = document.querySelector('.active-row');
-    //let rowStructure = Object.keys(studentExample);
+
     if (activeRow === null) {
-        //table.appendChild(createEmptyRow(getRowsCount() + 1));
         table.appendChild(createLastEmptyRow());
     } else {
-        // let oldRowsCount = TABLE_ROWS.length;
-        // table.insertBefore(createEmptyRow(activeRow.getAttribute('id')), activeRow);
-        // let newRowsCount = TABLE_ROWS.length;
-        // for (let i = activeRow.getAttribute('id'); i < getRowsCount(); i++) {
-        //     setIdAndRowNumber(TABLE_ROWS[i], i + 1);
-        // }
+
         let num = activeRow.getAttribute('id');
         table.insertBefore(createEmptyRowBeforeActive(num), activeRow);
-        changeNumeration(activeRow, num-1);
+        changeNumeration(activeRow, num);
     }
 
 }
@@ -283,17 +277,18 @@ function changeRows(sortClass) {
     }
 //change rows not delete all and render whole table
     //use insertBefore method
-    deleteOldTable();
 
-    let sortedArray = sortData(column);
-
-    for (let i = 0; i < sortedArray.length; i++) {
-        for (let j = 0; j < students.length; j++) {
-            if (sortedArray[i][0] === students[j]['id']) {
-                table.appendChild(createRow(students[j]), students[j]['id']);//think about getting row number
-            }
-        }
-    }
+    // deleteOldTable();
+    //
+    // let sortedArray = sortData(column);
+    //
+    // for (let i = 0; i < sortedArray.length; i++) {
+    //     for (let j = 0; j < students.length; j++) {
+    //         if (sortedArray[i][0] === students[j]['id']) {
+    //             table.appendChild(createRow(students[j]), students[j]['id']);//think about getting row number
+    //         }
+    //     }
+    // }
 
 }
 
@@ -335,7 +330,7 @@ function focusOnCell(event) {
             onTableHeadClick(target);
         }
 
-        if (target.classList.contains('table-data')) {
+        if (target.classList.contains('table-data') && !target.classList.contains('id')) {
             if (editingTd) return;
 
             makeTdEditable(target);
