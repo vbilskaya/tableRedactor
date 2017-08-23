@@ -13,7 +13,6 @@ $(document).ready(function () {
 
         let jsonStudents = json.students;
 
-        //тест, надо будет передать контекст без глобальной переменной
         studentsFromJson = jsonStudents;
 
         createTableHead(jsonStudents[0]);
@@ -21,10 +20,6 @@ $(document).ready(function () {
         studentExample = jsonStudents[0];
 
         for (let i = 0; i < jsonStudents.length; i++) {
-
-            // let rowNumber = i + 1;
-            //
-            // table.appendChild(createRow(jsonStudents[i], rowNumber));
             table.appendChild(renderRowFromJson(jsonStudents[i]));
         }
     });
@@ -37,11 +32,6 @@ $(document).ready(function () {
 function addTableEventsListeners() {
     let addButton = document.getElementById('add-row');
     let removeButton = document.getElementById('remove-row');
-
-    for (let i = 0; i < TABLE_ROWS.length; i++) {
-        TABLE_ROWS[i].addEventListener('focusout', onRowBlur);
-        console.log('event listener blur is added ' + i);
-    }
 
     addButton.addEventListener('click', onAddButtonClick);
     removeButton.addEventListener('click', onRemoveButtonClick);
@@ -100,42 +90,6 @@ function onAddButtonClick() {
     }
 
 }
-
-function setIdAndRowNumber(rowElem, num) {
-    rowElem.id = num;
-    let rowNum = document.createElement('div');
-    rowNum.innerHTML = +num;
-    rowNum.classList.add('row-number');
-    rowElem.appendChild(rowNum);
-    return rowElem;
-}//не используется, вызывается из неиспользуемых функций
-
-function createEmptyRow(number) {
-    let row = document.createElement('div');//change to div
-    row.classList.add('row');
-
-    let newRow = setIdAndRowNumber(row, number);
-
-    let studentKeys = Object.keys(studentExample);
-
-    for (let i = 0; i < studentKeys.length; i++) {
-        if (studentKeys[i] === 'id') {
-            let td = document.createElement('div');
-            td.classList.add(studentKeys[i]);
-            td.classList.add('table-data');
-            td.innerHTML = number;
-            newRow.appendChild(td);
-        } else {
-
-            let td = document.createElement('div');//change to div
-            td.classList.add(studentKeys[i]);
-            td.classList.add('table-data');
-            newRow.appendChild(td);
-        }
-    }
-
-    return newRow;
-}//не используется
 
 function generateRow(dataExample) {
     let row = document.createElement('div');
@@ -228,8 +182,9 @@ function createEmptyRowBeforeActive(num, rowNumber) {
 }
 
 function changeNumeration(row, num) {
+
     let newNum = +num+1;
-    //fillRowId(row, newNum);
+
     for(let i=newNum; i<getRowsCount()+1; i++){
         if(isFiltered){
             fillRowNumber(row, newNum);
@@ -246,27 +201,6 @@ function deleteRow(number) {
     let rowToDel = document.getElementById( number );
     table.removeChild(rowToDel);
 }
-
-function createRow(student, rowNumber) {
-
-    let row = document.createElement('div');//change to div
-    row.classList.add('row');
-
-    setIdAndRowNumber(row, rowNumber);
-
-    let studentKeys = Object.keys(student);
-
-    for (let i = 0; i < studentKeys.length; i++) {
-
-        let td = document.createElement('div');//change to div
-        td.classList.add(studentKeys[i]);
-        td.classList.add('table-data');
-        td.innerHTML = student[studentKeys[i]];
-        row.appendChild(td);
-    }
-
-    return row;
-}//не используется так как изменилась логика заполнения таблицы
 
 function createTableHead(student) {
 
@@ -316,34 +250,13 @@ function changeRows(sortClass) {
     }
 
     sortData(column);
-//change rows not delete all and render whole table
-    //use insertBefore method
 
-    // deleteOldTable();
-    //
-    // let sortedArray = sortData(column);
-    //
-    // for (let i = 0; i < sortedArray.length; i++) {
-    //     for (let j = 0; j < students.length; j++) {
-    //         if (sortedArray[i][0] === students[j]['id']) {
-    //             table.appendChild(createRow(students[j]), students[j]['id']);//think about getting row number
-    //         }
-    //     }
-    // }
-
-}
-
-function deleteOldTable() {
-    let rows = document.getElementsByClassName('row');
-    while (rows.length > 0) {
-        table.removeChild(rows[0]);
-    }
 }
 
 function sortData(arr) {
 
     if (isNaN(arr[0][1])) {
-        arr.sort(compareString);//change to localeCompare
+        arr.sort(compareString);
     } else {
         arr.sort(compareNumeric);
     }
@@ -374,6 +287,7 @@ function compareNumeric(a, b) {
 }
 
 function swap(firstElemId,secondElemId) {
+
     let firstRow = document.getElementById(firstElemId);
     let secondRow = document.getElementById(secondElemId);
     let firstRowNumber = firstRow.getElementsByClassName('row-number')[0];
@@ -410,8 +324,6 @@ function focusOnCell(event) {
 
             selectRow(target);
             return;
-            // let row = target.parentNode;
-            // row.addEventListener('focusout', onRowBlur);
         }
 
         target = target.parentNode;
@@ -431,13 +343,7 @@ function selectRow(target) {
 
 }
 
-function onRowBlur(event) {
-    let row = event.target;
-    row.classList.remove('active-row');
-}//не используется
-
 function makeTdEditable(td) {
-//use contentEditable attr
 
     td.setAttribute('contenteditable', 'true');
     td.addEventListener('blur', onCellBlur);
@@ -446,7 +352,6 @@ function makeTdEditable(td) {
 }
 
 function onCellBlur(event) {
-    //remove contentEditable attr
 
     let td = event.target;
     td.removeAttribute('contenteditable');
