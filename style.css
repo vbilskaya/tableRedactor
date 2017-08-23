@@ -8,7 +8,7 @@
 }
 
 .table-header, .row-number{
-    background-color: #9fb6cd;
+    background-color: #FBA37E;
 }
 
 .row, .head-row{
@@ -31,6 +31,20 @@
 }
 
 .table-data:focus{
-    border: 1px solid #00FF00;
-    background-color: #c6e2ff;
+    border: 1px solid #F0672D;
+    background-color: #FCDCCF;
+}
+
+.active-row{
+    border: 2px solid darkred;
+    background-color: palevioletred;
+}
+
+button{
+    width: 150px;
+    height: 50px;
+    font-size: large;
+    background-color: #DC6F41;
+    border-radius: 10px;
+    margin: 20px;
 }
