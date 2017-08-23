@@ -5,6 +5,7 @@ let editingTd;
 let studentExample;
 let studentsFromJson;
 let container = document.querySelector('.container');
+let isFiltered = false;
 
 $(document).ready(function () {
 
@@ -59,9 +60,23 @@ function onRemoveButtonClick() {
 
     }else{
         number = activeRow.getAttribute('id');
+        let previousSibling = activeRow.previousElementSibling;
         deleteRow(number);
-        let num = +number+1;
-        changeNumeration(document.getElementById(num),number-1);
+        let nextSibling = previousSibling.nextElementSibling;
+        if(isFiltered){
+            let num;
+            if(previousSibling.classList.contains('head-row')){
+                num = 0;
+            }else{
+                num = previousSibling.firstChild.innerHTML;
+            }
+            changeNumeration(nextSibling,num);
+
+        }else{
+            let num = +number+1;
+            changeNumeration(document.getElementById(num),number-1);
+        }
+
     }
 
 }
@@ -74,8 +89,14 @@ function onAddButtonClick() {
     } else {
 
         let num = activeRow.getAttribute('id');
-        table.insertBefore(createEmptyRowBeforeActive(num), activeRow);
-        changeNumeration(activeRow, num);
+        let rowNumber = activeRow.firstChild.innerHTML;
+        table.insertBefore(createEmptyRowBeforeActive(num, rowNumber), activeRow);
+        if(isFiltered){
+            changeNumeration(activeRow, rowNumber);
+        }else{
+            changeNumeration(activeRow, num);
+        }
+
     }
 
 }
@@ -136,21 +157,23 @@ function generateRow(dataExample) {
     return row;
 }
 
-function fillRowNumber(row, num) {
+function fillRowId(row, num) {
 
-    let rowNumber, dataId;
+    let dataId;
 
     //set row id
     row.id = num;
-
-    //set row number
-    rowNumber = row.firstChild;
-    rowNumber.innerHTML = num;
 
     //set student id, to make it unique
     dataId = row.firstChild.nextSibling;
     dataId.innerHTML = num;
 
+}
+
+function fillRowNumber(row,num){
+    let rowNumber;
+    rowNumber = row.firstChild;
+    rowNumber.innerHTML = num;
 }
 
 function fillRowContent(row, data) {
@@ -171,7 +194,8 @@ function fillRowContent(row, data) {
 
 function renderRowFromJson(student) {
    let row = generateRow(studentExample);
-   fillRowNumber(row, student['id']);
+   fillRowId(row, student['id']);
+   fillRowNumber(row, student['id']);//придумать откуда взять нум
    fillRowContent(row, student);
 
    return row;
@@ -181,14 +205,23 @@ function renderRowFromJson(student) {
 function createLastEmptyRow() {
     let num = +getRowsCount()+1;
     let row = generateRow(studentExample);
+    fillRowId(row, num);
     fillRowNumber(row, num);
 
     return row;
 }
 
-function createEmptyRowBeforeActive(num) {
+function createEmptyRowBeforeActive(num, rowNumber) {
     let row = generateRow(studentExample);
-    fillRowNumber(row, num);
+
+    if(isFiltered){
+        fillRowNumber(row, rowNumber);
+        fillRowId(row, getRowsCount()+1);
+    }else{
+        fillRowNumber(row, num);
+        fillRowId(row, num);
+    }
+
 
     return row;
 
@@ -196,9 +229,14 @@ function createEmptyRowBeforeActive(num) {
 
 function changeNumeration(row, num) {
     let newNum = +num+1;
-    //fillRowNumber(row, newNum);
+    //fillRowId(row, newNum);
     for(let i=newNum; i<getRowsCount()+1; i++){
-        fillRowNumber(row, newNum);
+        if(isFiltered){
+            fillRowNumber(row, newNum);
+        }else{
+            fillRowId(row, newNum);
+            fillRowNumber(row, newNum);
+        }
         row = row.nextSibling;
         newNum+=1;
     }
@@ -261,6 +299,7 @@ function onTableHeadClick(event) {
     let target = event,
         dataClass = target.getAttribute('class'),
         sortClass = dataClass.split(' ')[1];
+    isFiltered = true;
 
     changeRows(sortClass);
 }
@@ -275,6 +314,8 @@ function changeRows(sortClass) {
         let student = [id, dataValue];
         column.push(student);
     }
+
+    sortData(column);
 //change rows not delete all and render whole table
     //use insertBefore method
 
@@ -311,13 +352,42 @@ function sortData(arr) {
 }
 
 function compareString(a, b) {
-    if (a[1] > b[1]) return 1;
-    else if (a[1] < b[1]) return -1;
-    else return 0;
+    let result;
+    if (a[1] > b[1]) result = 1;
+    else if (a[1] < b[1]) result = -1;
+    else result = 0;
+    if(result>0){
+        swap(a[0],b[0]);
+    }
+    return result;
 }
 
 function compareNumeric(a, b) {
-    return a[1] - b[1];
+    let result;
+    if (+a[1] > +b[1]) result = 1;
+    else if (+a[1] < +b[1]) result = -1;
+    else result = 0;
+    if(result>0){
+        swap(a[0],b[0]);
+    }
+    return result;
+}
+
+function swap(firstElemId,secondElemId) {
+    let firstRow = document.getElementById(firstElemId);
+    let secondRow = document.getElementById(secondElemId);
+    let firstRowNumber = firstRow.getElementsByClassName('row-number')[0];
+    let secondRowNumber = secondRow.getElementsByClassName('row-number')[0];
+    let newFirstRowNumber;
+    let newSecondRowNumber;
+
+    newFirstRowNumber = secondRowNumber.innerHTML;
+    newSecondRowNumber = firstRowNumber.innerHTML;
+
+    firstRowNumber.innerHTML = newFirstRowNumber;
+    secondRowNumber.innerHTML = newSecondRowNumber;
+
+    table.insertBefore(secondRow, firstRow);
 }
 
 function focusOnCell(event) {
